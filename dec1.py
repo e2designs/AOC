@@ -26,19 +26,11 @@ the changes in frequency have been applied?
 
 import sys
 
-START_VAL = 0
 
-def main():
-    """ Main function"""
-    num = START_VAL
-    with open(sys.argv[1], 'r') as fh:
-        data = fh.read()
-        for line in data.split('\n'):
-            if line != '':
-                num = num + int(line)
+num = 0
+with open(sys.argv[1]) as fh:
+    for line in fh:
+        if line != '':
+            num = num + int(line)
 
-    print('Final num = {}'.format(num))
-
-
-if __name__ == '__main__':
-    main()
+print('Final num = {}'.format(num))
