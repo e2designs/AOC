@@ -30,14 +30,18 @@ Here are other examples:
 What is the first frequency your device reaches twice?
 """
 
+from __future__ import absolute_import
 import sys
+import time
 
-startnum = 0
+num = 0
 pre_val = [0,]
-
-num = startnum
+start_time = time.time()
 duplicate = False
+iterations = 0
+
 while not duplicate:
+    iterations += 1
     with open(sys.argv[1]) as fh:
         for line in fh:
             if line != '':
@@ -49,4 +53,6 @@ while not duplicate:
                 else:
                     pre_val.append(num)
 
+print('Iterated {} times over {}'.format(iterations, (time.time() - start_time)))
 print('Valued reached twice: {}'.format(num))
+
