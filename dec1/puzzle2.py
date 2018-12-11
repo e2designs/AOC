@@ -34,16 +34,48 @@ from __future__ import absolute_import
 import sys
 import time
 
-num = 0
-pre_val = [0,]
-start_time = time.time()
-duplicate = False
-iterations = 0
 
-while not duplicate:
-    iterations += 1
-    with open(sys.argv[1]) as fh:
-        for line in fh:
+
+def store_list(filename):
+    """ Brute force inefficient way with a poor data structure"""
+    num = 0
+    pre_val = [0,]
+    start_time = time.time()
+    duplicate = False
+    iterations = 0
+
+    while not duplicate:
+        iterations += 1
+        with open(filename) as fh:
+            for line in fh:
+                if line != '':
+                    num = num + int(line)
+                    if num in pre_val:
+                        print('Reached twice:{}'.format(num))
+                        duplicate = True
+                        break
+                    else:
+                        pre_val.append(num)
+
+    execution_time = time.time() - start_time
+    print('Iterated {} times over {}'.format(iterations, execution_time))
+    print('Valued reached twice: {}'.format(num))
+    return iterations, execution_time, num
+
+def read_once(filename):
+    """ Same sort of Brute force and inefficient, but only read the file one
+    time"""
+    num = 0
+    pre_val = [0,]
+    start_time = time.time()
+    duplicate = False
+    iterations = 0
+    with open(filename) as fh:
+        data = fh.read().splitlines()
+
+    while not duplicate:
+        iterations += 1
+        for line in data:
             if line != '':
                 num = num + int(line)
                 if num in pre_val:
@@ -53,6 +85,107 @@ while not duplicate:
                 else:
                     pre_val.append(num)
 
-print('Iterated {} times over {}'.format(iterations, (time.time() - start_time)))
-print('Valued reached twice: {}'.format(num))
+    execution_time = time.time() - start_time
+    print('Iterated {} times over {}'.format(iterations, execution_time))
+    print('Valued reached twice: {}'.format(num))
+    return iterations, execution_time, num
 
+def read_int(filename):
+    """ Same sort of Brute force and inefficient, but only read the file one
+    time and typecast as int"""
+    num = 0
+    pre_val = [0,]
+    start_time = time.time()
+    duplicate = False
+    iterations = 0
+    with open(filename) as fh:
+        data = map(int, fh.read().splitlines())
+
+    while not duplicate:
+        iterations += 1
+        for line in data:
+            num = num + line
+            if num in pre_val:
+                print('Reached twice:{}'.format(num))
+                duplicate = True
+                break
+            else:
+                pre_val.append(num)
+
+    execution_time = time.time() - start_time
+    print('Iterated {} times over {}'.format(iterations, execution_time))
+    print('Valued reached twice: {}'.format(num))
+    return iterations, execution_time, num
+
+
+def store_set(filename):
+    """ Store numbers as a set vs list so that a value in statement is
+    efficient"""
+    num = 0
+    pre_val = set()
+    pre_val.add(num)
+    start_time = time.time()
+    duplicate = False
+    iterations = 0
+
+    while not duplicate:
+        iterations += 1
+        with open(filename) as fh:
+            for line in fh:
+                if line != '':
+                    num = num + int(line)
+                    if num in pre_val:
+                        print('Reached twice:{}'.format(num))
+                        duplicate = True
+                        break
+                    else:
+                        pre_val.add(num)
+
+    execution_time = time.time() - start_time
+    print('Iterated {} times over {}'.format(iterations, execution_time))
+    print('Valued reached twice: {}'.format(num))
+    return iterations, execution_time, num
+
+def all_together(filename):
+    """ Should be the most efficient:
+        - Read file one time
+        - Type cast to int
+        - store previous results as a set
+        """
+    num = 0
+    pre_val = set()
+    pre_val.add(num)
+    start_time = time.time()
+    duplicate = False
+    iterations = 0
+    with open(filename) as fh:
+        data = map(int, fh.read().splitlines())
+
+    while not duplicate:
+        iterations += 1
+        for line in data:
+            num = num + int(line)
+            if num in pre_val:
+                print('Reached twice:{}'.format(num))
+                duplicate = True
+                break
+            else:
+                pre_val.add(num)
+
+    execution_time = time.time() - start_time
+    print('Iterated {} times over {}'.format(iterations, execution_time))
+    print('Valued reached twice: {}'.format(num))
+    return iterations, execution_time, num
+
+if __name__ == '__main__':
+    try:
+        filename = sys.argv[1]
+    except IndexError:
+        print('Missing input file. USAGE: python puzzle2.py <inputfile>')
+    results = {}
+    results['list'] = store_list(filename)
+    results['set'] = store_set(filename)
+    results['read_one'] = read_once(filename)
+    results['read_int'] = read_int(filename)
+    results['efficient'] = all_together(filename)
+    print results
